@@ -1,5 +1,7 @@
 package org.devinhouse.superherois.cli;
 
+import org.devinhouse.superherois.exception.OpcaoInvalidaException;
+
 import org.devinhouse.superherois.model.Heroi;
 import org.devinhouse.superherois.model.Personagem;
 import org.devinhouse.superherois.model.Vilao;
@@ -13,10 +15,15 @@ public class Display {
     private List<Personagem> personagens;
     Scanner scan = new Scanner(System.in);
 
+    public Display() {
+        this.personagens = new ArrayList<>();
+        this.scan = new Scanner(System.in);
+    }
+
+
     public void exibirMenu{
 
-
-        int escolha;
+        int escolha = 0;
 
         do{
 
@@ -28,29 +35,47 @@ public class Display {
 
 
             System.out.print("Escolha uma opção: ");
-            escolha = scan.nextInt();
-
-            switch (escolha){
-                case 1:
-                    cadastrarHeroi();
-                    break;;
-                case 2:
-                    cadastrarVilao();
-                    break;;
-                case 3:
-                    listar();
-                    break;;
-                case 4:
-                    System.out.println("Encerrando o cadastro. Flws!");
-                    break;;
-                default:
-                    System.out.println("Opção inválida. Tente novamente.");
+            try {
+                escolha = scan.nextInt();
+                validarOpcao(escolha);
+                executarOpcao(escolha);
+            } catch (OpcaoInvalidaException e) {
+                System.out.println("Erro: " + e.getMessage());
+                scan.nextLine();
+            } catch (Exception e) {
+                System.out.println("Erro inesperado: " + e.getMessage());
+                scan.nextLine();
             }
 
+
         } while (escolha != 4);
-
-
     }
+
+    private void validarOpcao(int opcao) throws OpcaoInvalidaException {
+        if (opcao < 1 || opcao > 4) {
+            throw new OpcaoInvalidaException("Opção inválida. Tente novamente.");
+        }
+    }
+
+    private void executarOpcao(int opcao){
+        switch (opcao){
+            case 1:
+                cadastrarHeroi();
+                break;
+            case 2:
+                cadastrarVilao();
+                break;
+            case 3:
+                listar();
+                break;
+            case 4:
+                System.out.println("Encerrando o cadastro. Flws!");
+                break;
+            default:
+                System.out.println("Opção inválida. Tente novamente.");
+        }
+    }
+
 
     private void listar() {
         for(Personagem p : personagens){
